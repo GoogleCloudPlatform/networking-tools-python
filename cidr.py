@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
 import json
+import sys
+
 import netaddr
 
 try:
@@ -41,6 +42,7 @@ def read_url_py3(url):
         print("Invalid HTTP response from %s" % url)
         return {}
 
+
 def read_url(url):
     try:
         if sys.version_info.major == 3:
@@ -52,30 +54,32 @@ def read_url(url):
         print("Could not parse HTTP response from %s" % url)
         return {}
 
+
 def get_ip_address(url):
     json_data = read_url(url)
     network_cidrs = {
-        'ipv4': netaddr.IPSet(),
-        'ipv6': netaddr.IPSet(),
+        "ipv4": netaddr.IPSet(),
+        "ipv6": netaddr.IPSet(),
     }
     if json_data:
-        print("{} published: {}".format(url, json_data.get('creationTime')))
-        for e in json_data['prefixes']:
-            if e.get('ipv4Prefix'):
-                network_cidrs['ipv4'].add(e.get('ipv4Prefix'))
-            if e.get('ipv6Prefix'):
-                network_cidrs['ipv6'].add(e.get('ipv6Prefix'))
+        print("{} published: {}".format(url, json_data.get("creationTime")))
+        for e in json_data["prefixes"]:
+            if e.get("ipv4Prefix"):
+                network_cidrs["ipv4"].add(e.get("ipv4Prefix"))
+            if e.get("ipv6Prefix"):
+                network_cidrs["ipv6"].add(e.get("ipv6Prefix"))
     return network_cidrs
 
+
 def main():
-    print('Python version ' + sys.version)
+    print("Python version " + sys.version)
     goog_cidrs = get_ip_address(goog_url)
     cloud_cidrs = get_ip_address(cloud_url)
     print("IP ranges for Google APIs and services default domains:")
-    for key in ['ipv4', 'ipv6']:
+    for key in ["ipv4", "ipv6"]:
         for i in goog_cidrs[key].difference(cloud_cidrs[key]).iter_cidrs():
             print(i)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
