@@ -12,19 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 import os
 import sys
-import json
-
-import cidr
 
 from mock import Mock
+
+import cidr
 
 
 class BaseClass:
     def setup_method(self, test_method):
         """To setup mock values for http requests"""
-        os.environ['BUILD_SPECIFIC_GCLOUD_PROJECT'] = 'random'
+        os.environ["BUILD_SPECIFIC_GCLOUD_PROJECT"] = "random"
         mock_values = {
             cidr.goog_url: open("samplefiles/goog.json"),
             cidr.cloud_url: open("samplefiles/cloud.json"),
