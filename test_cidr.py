@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import sys
 import json
 
@@ -20,9 +21,10 @@ import cidr
 from mock import Mock
 
 
-class TestHttpRequests:
+class BaseClass:
     def setup_method(self, test_method):
         """To setup mock values for http requests"""
+        os.environ['BUILD_SPECIFIC_GCLOUD_PROJECT'] = 'random'
         mock_values = {
             cidr.goog_url: open("samplefiles/goog.json"),
             cidr.cloud_url: open("samplefiles/cloud.json"),
@@ -34,6 +36,8 @@ class TestHttpRequests:
         else:
             cidr.urllib.urlopen = _mock_fns
 
+
+class TestHttpRequests(BaseClass):
     def test_goog_url(self):
         output = cidr.read_url(cidr.goog_url)
         expected_output = json.loads(open("samplefiles/goog.json").read())
@@ -45,20 +49,7 @@ class TestHttpRequests:
         assert sorted(output.items()) == sorted(expected_output.items())
 
 
-class TestMain:
-    def setup_method(self, test_method):
-        """To setup mock values for http requests"""
-        mock_values = {
-            cidr.goog_url: open("samplefiles/goog.json"),
-            cidr.cloud_url: open("samplefiles/cloud.json"),
-        }
-        _mock_fns = Mock()
-        _mock_fns.side_effect = lambda x: mock_values.get(x)
-        if sys.version_info.major == 3:
-            cidr.urllib.request.urlopen = _mock_fns
-        else:
-            cidr.urllib.urlopen = _mock_fns
-
+class TestMain(BaseClass):
     def test_main(self):
         try:
             import StringIO as io
