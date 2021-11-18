@@ -41,3 +41,19 @@ To exit the virtualenv
 ```python
 deactivate
 ```
+
+
+## How to run testcases?
+
+Create a python virtual environment `py3`
+```python3
+pip3 install virtualenv
+virtualenv --python python3 py3
+```
+
+Install requirements and run testcases
+```
+source py3/bin/activate
+pip install -r requirements.txt -r dev-requirements.txt
+python3 test_cidr.py
+```
