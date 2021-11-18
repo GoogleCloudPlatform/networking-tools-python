@@ -15,41 +15,89 @@
 import json
 import os
 import sys
+import unittest
+import requests
 
-from mock import Mock
+from http.server import BaseHTTPRequestHandler, HTTPServer
+import socket
+from threading import Thread
 
 import cidr
 
 
-class BaseClass:
+def get_free_port():
+    s = socket.socket(socket.AF_INET, type=socket.SOCK_STREAM)
+    s.bind(("localhost", 0))
+    address, port = s.getsockname()
+    s.close()
+    return port
+
+
+class MockServerRequestHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(requests.codes.ok)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        if self.path.endswith("goog.json"):
+            fname = "samplefiles/goog.json"
+            with open(fname) as fp:
+                self.wfile.write(bytes(fp.read(), "utf-8"))
+        elif self.path.endswith("cloud.json"):
+            fname = "samplefiles/cloud.json"
+            with open(fname) as fp:
+                self.wfile.write(bytes(fp.read(), "utf-8"))
+        else:
+            mock_page = [
+                "<html>",
+                "<head><title>Mock Test</title></head>",
+                "<body>",
+                "<p>This is a test page.</p>",
+                "You accessed path: {}",
+                "</body>",
+                "</html>",
+            ]
+            self.wfile.write(bytes("".join(mock_page).format(self.path), "utf-8"))
+        return
+
+
+class BaseClass(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        # Configure mock server.
+        cls.mock_server_port = mock_server_port
+        cls.mock_server = HTTPServer(
+            ("localhost", cls.mock_server_port), MockServerRequestHandler
+        )
+        cls.mock_server_thread = Thread(target=cls.mock_server.serve_forever)
+        cls.mock_server_thread.setDaemon(True)
+        cls.mock_server_thread.start()
+        print("Running Server")
+
     def setup_method(self, test_method):
         """To setup mock values for http requests"""
         os.environ["BUILD_SPECIFIC_GCLOUD_PROJECT"] = "random"
-        mock_values = {
-            cidr.goog_url: open("samplefiles/goog.json"),
-            cidr.cloud_url: open("samplefiles/cloud.json"),
-        }
-        _mock_fns = Mock()
-        _mock_fns.side_effect = lambda x: mock_values.get(x)
-        if sys.version_info.major == 3:
-            cidr.urllib.request.urlopen = _mock_fns
-        else:
-            cidr.urllib.urlopen = _mock_fns
 
 
 class TestHttpRequests(BaseClass):
+    def test_request_response(self):
+        url = "http://localhost:{port}/HealthCheck".format(port=mock_server_port)
+        # Send a request to the mock API server and store the response.
+        response = requests.get(url)
+        # Confirm that the request-response cycle completed successfully.
+        assert response.ok == True, "Mock server is not running!"
+
     def test_goog_url(self):
-        output = cidr.read_url(cidr.goog_url)
-        expected_output = json.loads(open("samplefiles/goog.json").read())
-        assert sorted(output.items()) == sorted(expected_output.items())
+        output = cidr.read_url(cidr.IPRANGE_URLS["goog"])
+        with open("samplefiles/goog.json") as fp:
+            expected_output = json.loads(fp.read())
+            assert sorted(output.items()) == sorted(expected_output.items())
 
     def test_cloud_url(self):
-        output = cidr.read_url(cidr.cloud_url)
-        expected_output = json.loads(open("samplefiles/cloud.json").read())
-        assert sorted(output.items()) == sorted(expected_output.items())
+        output = cidr.read_url(cidr.IPRANGE_URLS["cloud"])
+        with open("samplefiles/cloud.json") as fp:
+            expected_output = json.loads(fp.read())
+            assert sorted(output.items()) == sorted(expected_output.items())
 
-
-class TestMain(BaseClass):
     def test_main(self):
         try:
             import StringIO as io
@@ -60,5 +108,15 @@ class TestMain(BaseClass):
         cidr.main()
         sys.stdout = sys.__stdout__
         current_output = capturedOutput.getvalue().strip()
-        expected_output = open("samplefiles/output.txt").read().strip()
+        with open("samplefiles/output.txt") as fp:
+            expected_output = fp.read().strip()
         assert len(set(expected_output) - set(current_output)) == 0
+
+
+if __name__ == "__main__":
+    mock_server_port = get_free_port()
+    cidr.IPRANGE_URLS = {
+        "goog": "http://localhost:{}/ipranges/goog.json".format(mock_server_port),
+        "cloud": "http://localhost:{}/ipranges/cloud.json".format(mock_server_port),
+    }
+    unittest.main()
