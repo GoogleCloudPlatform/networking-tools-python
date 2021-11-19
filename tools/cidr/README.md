@@ -3,6 +3,7 @@
 
 <!-- Note: This code will be moved to https://github.com/GoogleCloudPlatform/python-docs-samples under networking/samples. Folder structure as per https://github.com/googleapis/python-compute/tree/main/samples/snippets -->
 
+
 ## Description
 
 Google publishes the complete list of outbound IP address ranges that it makes available to users on the internet in goog.json.
@@ -12,6 +13,9 @@ Google also publishes a list of global and regional external IP addresses ranges
 Goal of this script is to identify & show the available CIDRs. To learn more about CIDR check at [Link](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
 
 This Script compatible to both Py27 & Py36.
+
+### Officially Supported Python Versions
+Python 2.7 & Python 3.6, 3.7, 3.8, 3.9, 3.10
 
 
 ## How to Run?
