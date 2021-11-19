@@ -12,15 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import os
-import sys
-import unittest
-import requests
-
-from http.server import BaseHTTPRequestHandler, HTTPServer
 import socket
-from threading import Thread
+import sys
+import threading
+import unittest
+
+# Third party
+import requests
 
 import cidr
 
@@ -31,6 +32,15 @@ def get_free_port():
     address, port = s.getsockname()
     s.close()
     return port
+
+
+# Global Variables
+mock_server_port = get_free_port()
+# Override Urls to use Mock Test Urls
+cidr.IPRANGE_URLS = {
+    "goog": "http://localhost:{}/ipranges/goog.json".format(mock_server_port),
+    "cloud": "http://localhost:{}/ipranges/cloud.json".format(mock_server_port),
+}
 
 
 class MockServerRequestHandler(BaseHTTPRequestHandler):
@@ -68,7 +78,7 @@ class BaseClass(unittest.TestCase):
         cls.mock_server = HTTPServer(
             ("localhost", cls.mock_server_port), MockServerRequestHandler
         )
-        cls.mock_server_thread = Thread(target=cls.mock_server.serve_forever)
+        cls.mock_server_thread = threading.Thread(target=cls.mock_server.serve_forever)
         cls.mock_server_thread.setDaemon(True)
         cls.mock_server_thread.start()
         print("Running Server")
@@ -84,19 +94,29 @@ class TestHttpRequests(BaseClass):
         # Send a request to the mock API server and store the response.
         response = requests.get(url)
         # Confirm that the request-response cycle completed successfully.
-        assert response.ok == True, "Mock server is not running!"
+        self.assertTrue(
+            response.ok, msg="Failed to run test server! Install dev-requirements.txt"
+        )
 
     def test_goog_url(self):
         output = cidr.read_url(cidr.IPRANGE_URLS["goog"])
         with open("samplefiles/goog.json") as fp:
             expected_output = json.loads(fp.read())
-            assert sorted(output.items()) == sorted(expected_output.items())
+            self.assertEqual(
+                sorted(output.items()),
+                sorted(expected_output.items()),
+                msg="Url Data Mistmatch!",
+            )
 
     def test_cloud_url(self):
         output = cidr.read_url(cidr.IPRANGE_URLS["cloud"])
         with open("samplefiles/cloud.json") as fp:
             expected_output = json.loads(fp.read())
-            assert sorted(output.items()) == sorted(expected_output.items())
+            self.assertEqual(
+                sorted(output.items()),
+                sorted(expected_output.items()),
+                msg="Url Data Mistmatch!",
+            )
 
     def test_main(self):
         try:
@@ -110,13 +130,10 @@ class TestHttpRequests(BaseClass):
         current_output = capturedOutput.getvalue().strip()
         with open("samplefiles/output.txt") as fp:
             expected_output = fp.read().strip()
-        assert len(set(expected_output) - set(current_output)) == 0
+        self.assertEqual(
+            set(expected_output) - set(current_output), set(), msg="Output Mistmatch!"
+        )
 
 
 if __name__ == "__main__":
-    mock_server_port = get_free_port()
-    cidr.IPRANGE_URLS = {
-        "goog": "http://localhost:{}/ipranges/goog.json".format(mock_server_port),
-        "cloud": "http://localhost:{}/ipranges/cloud.json".format(mock_server_port),
-    }
     unittest.main()

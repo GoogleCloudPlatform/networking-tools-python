@@ -1,0 +1,5 @@
+requests
+netaddr
+gen_readme
+pytest
+nox
