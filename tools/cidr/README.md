@@ -63,3 +63,26 @@ python3 -m pytest
 # Test for multiple python version
 nox
 ```
+
+## Troubleshooting
+
+If you're on a Mac where local SSH certificates haven't been installed yet, you may get this error:
+
+```
+(py3) $ python cidr.py
+ERROR: Invalid HTTP response from https://www.gstatic.com/ipranges/goog.json
+ERROR: Invalid HTTP response from https://www.gstatic.com/ipranges/cloud.json
+IP ranges for Google APIs and services default domains:
+Traceback (most recent call last):
+  File "/tmp/networking-tools-python/tools/cidr/cidr.py", line 65, in <module>
+    main()
+  File "/tmp/networking-tools-python/tools/cidr/cidr.py", line 60, in main
+    for ip in (cidrs["goog"] - cidrs["cloud"]).iter_cidrs():
+TypeError: unsupported operand type(s) for -: 'NoneType' and 'NoneType'
+```
+
+If this is the case, run the command shown below (Python 3.9 example):
+
+    (py3) $ open /Applications/Python\ 3.9/Install\ Certificates.command
+
+A window will pop up, run a few commands, then automatically close. Once that happens, you should be able to run `python cidr.py` again and have it work. If you don't use the command-line, then follow [these instructions](https://stackoverflow.com/a/53310545/305689) from your computer screen.
