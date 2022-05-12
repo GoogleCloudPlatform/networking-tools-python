@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#[START networkmanagement_cidr_ip_addresses]
 from __future__ import print_function
 
 import json
@@ -63,3 +64,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+#[END networkmanagement_cidr_ip_addresses]
