@@ -18,7 +18,7 @@ import unittest
 
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
-import signedrequest
+import ed25519_keygen
 
 
 def get_sign(text: bytes) -> bytes:
@@ -45,7 +45,7 @@ def is_valid(signed_text: bytes, text: bytes) -> bool:
 class BaseClass(unittest.TestCase):
     @classmethod
     def setUp(cls):
-        signedrequest.generate_ed25519_keypair()
+        ed25519_keygen.generate_ed25519_keypair()
 
     @classmethod
     def tearDown(cls):
