@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import base64
+import os
 import unittest
 
 from cryptography.hazmat.primitives.asymmetric import ed25519
@@ -38,7 +38,8 @@ def is_valid(signed_text: bytes, text: bytes) -> bool:
         test_public_key.verify(signed_text, text)
         return True
     except Exception as err:
-        raise Exception("Validation Failed")
+        print("Validation Failed")
+        print(str(err))
         return False
 
 
@@ -51,6 +52,10 @@ class BaseClass(unittest.TestCase):
     def tearDown(cls):
         os.remove("private.key")
         os.remove("public.pub")
+
+    def setup_method(self, test_method):
+        """To setup mock values for http requests"""
+        os.environ["BUILD_SPECIFIC_GCLOUD_PROJECT"] = "random"
 
 
 class TestHttpRequests(BaseClass):
