@@ -35,13 +35,16 @@ def generate_ed25519_keypair() -> None:
         encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw
     )
     print("Public Key:\t", base64.urlsafe_b64encode(public_key_str))
-
-    with open("private.key", "wb") as fp:
+    
+    fname = "private.key"
+    with open(fname", "wb") as fp:
         fp.write(base64.urlsafe_b64encode(private_key_str))
-
+        print(f"Public Key is written to :\t{fname}")
+    
+    fname = "public.pub"
     with open("public.pub", "wb") as fp:
         fp.write(base64.urlsafe_b64encode(public_key_str))
-
+        print(f"Public Key is written to :\t{fname}")
 
 # [END mediacdn_generate_ed25519_keys]
 if __name__ == "__main__":
