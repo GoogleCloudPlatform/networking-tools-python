@@ -20,9 +20,17 @@ from cryptography.hazmat.primitives.asymmetric import ed25519
 
 
 def generate_ed25519_keypair(
-    private_filename: str = "private.key", public_filename: str = "public.pub"
+    private_key_filename: str = "private.key", public_key_filename: str = "public.pub"
 ) -> None:
-    """Generate Ed25519 Keys Pairs."""
+    """Generate Ed25519 Keys Pairs.
+
+    Args:
+        private_key_filename(default private.key): private key filename as a string.
+        public_key_filename(default public.pub): public key filename as a string
+
+    Returns:
+
+    """
     private_key = ed25519.Ed25519PrivateKey.generate()
     public_key = private_key.public_key()
 
@@ -38,13 +46,13 @@ def generate_ed25519_keypair(
     )
     print("Public Key:\t", base64.urlsafe_b64encode(public_key_str))
 
-    with open(private_filename, "wb") as fp:
+    with open(private_key_filename, "wb") as fp:
         fp.write(base64.urlsafe_b64encode(private_key_str))
-        print(f"Private Key is written to:\t{private_filename}")
+        print(f"Private Key is written to:\t{private_key_filename}")
 
-    with open(public_filename, "wb") as fp:
+    with open(public_key_filename, "wb") as fp:
         fp.write(base64.urlsafe_b64encode(public_key_str))
-        print(f"Public Key is written to:\t{public_filename}")
+        print(f"Public Key is written to:\t{public_key_filename}")
 
 
 # [END mediacdn_generate_ed25519_keys]
