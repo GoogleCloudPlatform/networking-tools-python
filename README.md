@@ -9,3 +9,5 @@ The tools folder contains ready-made utilities which can simplify Google Cloud P
 
 
 - [CIDR](tools/cidr): A tool that reads the outbound IP address ranges published by Google and outputs the available [CIDR](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing) ranges.
+
+- [Ed25519-keygen](tools/ed25519_keygen): A tool for generation of key value pairs(public and private keys) using [Ed25519 Crypto Algorithm](https://en.wikipedia.org/wiki/EdDSA#Ed25519).
