@@ -6,13 +6,13 @@
 
 ## Description
 
-Google publishes the complete list of outbound IP address ranges that it makes available to users on the internet in goog.json.
+Google publishes the complete list of outbound IP address ranges that it makes available to users on the internet in `goog.json`.
 
-Google also publishes a list of global and regional external IP addresses ranges available for customer's Google Cloud resources in cloud.json.
+Google also publishes a list of global and regional external IP addresses ranges available for customer's Google Cloud resources in `cloud.json`.
 
 Goal of this script is to identify & show the available CIDRs. To learn more about CIDR check at [Link](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
 
-This Script compatible to both Py27 & Py36.
+This script is Python 2 (2.7) and 3 (3.6+) compatible.
 
 ### Officially Supported Python Versions
 Python 2.7 & Python 3.6, 3.7, 3.8, 3.9, 3.10
@@ -21,7 +21,7 @@ Python 2.7 & Python 3.6, 3.7, 3.8, 3.9, 3.10
 ## How to Run?
 
 
-(Optional) Using `virtualenv` is an effective to ensure script executions without disturbing your existing local environment. To step your virtualenv, run the following steps
+(Optional) Using `virtualenv` is an effective to ensure script executions without disturbing your existing local environment. Run the following steps to execute the script safely in a Python 3 environment—a similar technique can be used to run it in Python 2:
 
 ```python3
 pip3 install virtualenv
